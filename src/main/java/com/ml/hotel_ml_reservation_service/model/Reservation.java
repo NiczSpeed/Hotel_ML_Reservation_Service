@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @Table(name = "Reservations")
 public class Reservation {
 
@@ -25,8 +26,8 @@ public class Reservation {
     private String hotelName;
     @Column(name = "roomNumber")
     private Long roomNumber;
-    @Column(name = "clientName")
-    private String clientName;
+    @Column(name = "clientEmail")
+    private String clientEmail;
     @Column(name = "startDate")
     private LocalDate startDate;
     @Column(name = "endDate")

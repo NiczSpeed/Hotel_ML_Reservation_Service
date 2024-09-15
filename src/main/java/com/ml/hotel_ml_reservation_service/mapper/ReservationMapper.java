@@ -5,7 +5,7 @@ import com.ml.hotel_ml_reservation_service.model.Reservation;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface ReservationMapper {
 
     ReservationMapper Instance = Mappers.getMapper(ReservationMapper.class);

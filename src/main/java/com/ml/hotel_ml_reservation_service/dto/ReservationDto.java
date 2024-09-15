@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationDto {
@@ -14,7 +14,7 @@ public class ReservationDto {
     private String hotelCity;
     private String hotelName;
     private Long roomNumber;
-    private String clientName;
+    private String clientEmail;
     private LocalDate startDate;
     private LocalDate endDate;
 
