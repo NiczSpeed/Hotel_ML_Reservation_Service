@@ -7,6 +7,9 @@ plugins {
 group = "com.ml"
 version = "0.0.1-SNAPSHOT"
 
+val mapstructVersion = "1.5.5.Final"
+val jsonVersion = "20240303"
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -27,6 +30,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    implementation("org.json:json:${jsonVersion}")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
