@@ -10,4 +10,7 @@ import java.util.UUID;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
     Set<Reservation> findByHotelCity(String hotelCity);
+    Set<Reservation> findByHotelName(String hotelName);
+    Set<Reservation> findByRoomNumber(Long roomNumber);
+    Set<Reservation> findReservationByHotelNameAndHotelCityAndRoomNumber(String hotelName, String hotelCity, Long roomNumber);
 }

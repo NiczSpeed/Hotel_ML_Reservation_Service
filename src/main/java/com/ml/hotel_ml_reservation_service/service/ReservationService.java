@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Base64;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -47,7 +47,6 @@ public class ReservationService {
                     .build();
             Reservation reservation = ReservationMapper.Instance.mapReservationDtoToReservation(reservationDto);
             reservationRepository.save(reservation);
-            logger.info("Reservation created: " + reservation.toString());
             sendRequestMessage("Reservation created!", messageId, "success_request_topic");
         } catch (Exception e) {
             logger.severe("Error while creating reservation: " + e.getMessage());
@@ -59,8 +58,17 @@ public class ReservationService {
         try {
             JSONObject json = decodeMessage(message);
             String messageId = json.optString("messageId");
-            Set<Reservation> reservations = reservationRepository.findByHotelCity(json.optString("city"));
-            if(reservations.isEmpty()){
+            json.remove("messageId");
+            Map<String, Object> messageMap = json.getJSONObject("message").toMap();
+            json.clear();
+            json = new JSONObject(messageMap);
+            LocalDate startDate = LocalDate.parse(json.optString("startDate"));
+            LocalDate endDate = LocalDate.parse(json.optString("endDate"));
+            Set<Reservation> checkReservations = reservationRepository.findReservationByHotelNameAndHotelCityAndRoomNumber(json.optString("hotel"), json.optString("city"), json.optLong("room"));
+
+            if (checkReservations.isEmpty() || isDateRangeAvailable(checkReservations, startDate, endDate)) {
+                sendRequestMessage("True", messageId, "boolean_reservation_topic");
+            } else {
                 sendRequestMessage("False", messageId, "boolean_reservation_topic");
             }
         } catch (Exception e) {
@@ -84,6 +92,19 @@ public class ReservationService {
             else logger.info("Message send successfully!");
         });
         return message;
+    }
+
+    private static boolean isDateRangeAvailable(Set<Reservation> reservationse, LocalDate newStart, LocalDate newEnd) {
+        for (Reservation reservation : reservationse) {
+            LocalDate existingStart = reservation.getStartDate();
+            LocalDate existingEnd = reservation.getEndDate();
+
+            if (newEnd.isBefore(existingStart) || newEnd.equals(existingStart) || newStart.isAfter(existingEnd) || newStart.equals(existingEnd)) {
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
 
