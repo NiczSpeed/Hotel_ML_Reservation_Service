@@ -17,6 +17,7 @@ public class ReservationDto {
     private String clientEmail;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Double amountPayable;
 
 
 }

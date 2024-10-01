@@ -32,5 +32,7 @@ public class Reservation {
     private LocalDate startDate;
     @Column(name = "endDate")
     private LocalDate endDate;
+    @Column(name = "amountPayable")
+    private Double amountPayable;
 
 }
