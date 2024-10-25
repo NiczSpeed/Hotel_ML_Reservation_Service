@@ -4,6 +4,7 @@ import com.ml.hotel_ml_reservation_service.dto.ReservationDto;
 import com.ml.hotel_ml_reservation_service.mapper.ReservationMapper;
 import com.ml.hotel_ml_reservation_service.model.Reservation;
 import com.ml.hotel_ml_reservation_service.repository.ReservationRepository;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,10 +13,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
@@ -44,7 +42,7 @@ public class ReservationService {
         CompletableFuture<String> responseFuture = new CompletableFuture<>();
         responseFutures.put(priceMessageId, responseFuture);
         String messageWithId = attachMessageId(json.toString(), priceMessageId);
-        kafkaTemplate.send("check_room_reservation_price", Base64.getEncoder().encodeToString(messageWithId.getBytes()));
+        kafkaTemplate.send("check_room_reservation_price_topic", Base64.getEncoder().encodeToString(messageWithId.getBytes()));
         try {
             String response = responseFuture.get(5, TimeUnit.SECONDS);
             responseFutures.remove(priceMessageId);
@@ -95,6 +93,25 @@ public class ReservationService {
         }
     }
 
+    @KafkaListener(topics = "all_user_reservation_request_topic", groupId = "hotel_ml_reservation_service")
+    private void getAllUserReservations(String message) throws Exception {
+        try {
+            JSONObject json = new JSONObject(decodeMessage(message));
+            String messageId = json.optString("messageId");
+            String userEmail = json.optString("email");
+            List<Reservation> reservations = reservationRepository.findByclientEmail(userEmail);
+            List<ReservationDto> reservationDtos = ReservationMapper.Instance.mapReservationListToReservationDtoList(reservations);
+            if (reservationDtos.isEmpty()) {
+                sendRequestMessage("Error:There is no reservations on your account!", messageId, "error_request_topic");
+            } else {
+                JSONArray jsonArray = new JSONArray(reservationDtos);
+                sendEncodedMessage(jsonArray.toString(), messageId, "all_user_reservation_response_topic");
+            }
+        } catch (Exception e) {
+            logger.severe("Error while creating hotel: " + e.getMessage());
+        }
+    }
+
 //    private JSONObject decodeMessage(String message) {
 //        byte[] decodedBytes = Base64.getDecoder().decode(message);
 //        message = new String(decodedBytes);
@@ -136,7 +153,8 @@ public class ReservationService {
     private String sendEncodedMessage(String message, String messageId, String topic) {
         JSONObject json = new JSONObject();
         json.put("messageId", messageId);
-        json.put("message", message);
+        if(message.contains("[")) json.put("message", new JSONArray(message));
+        else json.put("message", message);
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, Base64.getEncoder().encodeToString(json.toString().getBytes()));
         future.whenComplete((result, exception) -> {
             if (exception != null) logger.severe(exception.getMessage());

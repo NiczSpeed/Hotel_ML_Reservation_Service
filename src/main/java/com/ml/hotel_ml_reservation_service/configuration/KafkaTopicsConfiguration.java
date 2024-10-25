@@ -32,4 +32,20 @@ public class KafkaTopicsConfiguration {
                 .build();
     }
 
+    @Bean
+    public NewTopic allUserReservationRequestTopic(){
+        return TopicBuilder.name("all_user_reservation_request_topic")
+                .partitions(12)
+                .replicas(3)
+                .build();
+    }
+
+    @Bean
+    public NewTopic allUserReservationResponseTopic(){
+        return TopicBuilder.name("all_user_reservation_response_topic")
+                .partitions(12)
+                .replicas(3)
+                .build();
+    }
+
 }
