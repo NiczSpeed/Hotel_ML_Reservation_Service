@@ -61,7 +61,7 @@ public class ReservationService {
                         .build();
                 Reservation reservation = ReservationMapper.Instance.mapReservationDtoToReservation(reservationDto);
                 reservationRepository.save(reservation);
-                sendEncodedMessage(String.valueOf(reservationDto.getAmountPayable()), messageId, "response_create_reservation_topic");
+                sendEncodedMessage("Reservation was created!", messageId, "response_create_reservation_topic");
             }
 
 
@@ -112,11 +112,6 @@ public class ReservationService {
         }
     }
 
-//    private JSONObject decodeMessage(String message) {
-//        byte[] decodedBytes = Base64.getDecoder().decode(message);
-//        message = new String(decodedBytes);
-//        return new JSONObject(message);
-//    }
 
     private String sendRequestMessage(String message, String messageId, String topic) {
         JSONObject json = new JSONObject();
@@ -163,8 +158,8 @@ public class ReservationService {
         return message;
     }
 
-    @KafkaListener(topics = "room_price_topic", groupId = "hotel_ml_apigateway_service")
-    public void earnUserDetails(String message) {
+    @KafkaListener(topics = "room_price_topic", groupId = "hotel_ml_reservation_service")
+    public void earnReservationPrice(String message) {
         getRequestMessage(decodeMessage(message));
     }
 
