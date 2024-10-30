@@ -37,37 +37,39 @@ public class ReservationService {
     private void createReservation(String message) throws Exception {
         JSONObject json = new JSONObject(decodeMessage(message));
         String messageId = json.optString("messageId");
-        String priceMessageId = UUID.randomUUID().toString();
-
-        CompletableFuture<String> responseFuture = new CompletableFuture<>();
-        responseFutures.put(priceMessageId, responseFuture);
-        String messageWithId = attachMessageId(json.toString(), priceMessageId);
-        kafkaTemplate.send("check_room_reservation_price_topic", Base64.getEncoder().encodeToString(messageWithId.getBytes()));
-        try {
-            String response = responseFuture.get(5, TimeUnit.SECONDS);
-            responseFutures.remove(priceMessageId);
-            JSONObject priceJson = new JSONObject(response);
-            if (response.contains("Error")) {
-                sendRequestMessage(response, messageId, "error_request_topic");
-            } else {
-                ReservationDto reservationDto = new ReservationDto().builder()
-                        .startDate(LocalDate.parse(json.optString("startDate")))
-                        .endDate(LocalDate.parse(json.optString("endDate")))
-                        .hotelCity(json.optString("hotelCity"))
-                        .hotelName(json.optString("hotelName"))
-                        .roomNumber(json.optLong("roomNumber"))
-                        .clientEmail(json.optString("clientEmail"))
-                        .amountPayable(priceJson.optDouble("message"))
-                        .build();
-                Reservation reservation = ReservationMapper.Instance.mapReservationDtoToReservation(reservationDto);
-                reservationRepository.save(reservation);
-                sendEncodedMessage("Reservation was created!", messageId, "response_create_reservation_topic");
+        if (LocalDate.parse(json.optString("startDate")).isBefore(LocalDate.now()) || LocalDate.parse(json.optString("endDate")).isBefore(LocalDate.now())) {
+            sendRequestMessage("Error:You are trying to pick a date from the past!", messageId, "error_request_topic");
+        } else {
+            String priceMessageId = UUID.randomUUID().toString();
+            CompletableFuture<String> responseFuture = new CompletableFuture<>();
+            responseFutures.put(priceMessageId, responseFuture);
+            String messageWithId = attachMessageId(json.toString(), priceMessageId);
+            kafkaTemplate.send("check_room_reservation_price_topic", Base64.getEncoder().encodeToString(messageWithId.getBytes()));
+            try {
+                String response = responseFuture.get(5, TimeUnit.SECONDS);
+                responseFutures.remove(priceMessageId);
+                JSONObject priceJson = new JSONObject(response);
+                if (response.contains("Error")) {
+                    sendRequestMessage(response, messageId, "error_request_topic");
+                } else {
+                    ReservationDto reservationDto = new ReservationDto().builder()
+                            .startDate(LocalDate.parse(json.optString("startDate")))
+                            .endDate(LocalDate.parse(json.optString("endDate")))
+                            .hotelCity(json.optString("hotelCity"))
+                            .hotelName(json.optString("hotelName"))
+                            .roomNumber(json.optLong("roomNumber"))
+                            .clientEmail(json.optString("clientEmail"))
+                            .amountPayable(priceJson.optDouble("message"))
+                            .build();
+                    Reservation reservation = ReservationMapper.Instance.mapReservationDtoToReservation(reservationDto);
+                    reservationRepository.save(reservation);
+                    sendEncodedMessage("Reservation was created!", messageId, "response_create_reservation_topic");
+                }
+            } catch (Exception e) {
+                logger.severe("Error while creating reservation: " + e.getMessage());
             }
-
-
-        } catch (Exception e) {
-            logger.severe("Error while creating reservation: " + e.getMessage());
         }
+
     }
 
     @KafkaListener(topics = "check_reservation_topic", groupId = "hotel_ml_reservation_service")
@@ -148,7 +150,7 @@ public class ReservationService {
     private String sendEncodedMessage(String message, String messageId, String topic) {
         JSONObject json = new JSONObject();
         json.put("messageId", messageId);
-        if(message.contains("[")) json.put("message", new JSONArray(message));
+        if (message.contains("[")) json.put("message", new JSONArray(message));
         else json.put("message", message);
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, Base64.getEncoder().encodeToString(json.toString().getBytes()));
         future.whenComplete((result, exception) -> {
