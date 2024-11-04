@@ -4,6 +4,7 @@ import com.ml.hotel_ml_reservation_service.dto.ReservationDto;
 import com.ml.hotel_ml_reservation_service.mapper.ReservationMapper;
 import com.ml.hotel_ml_reservation_service.model.Reservation;
 import com.ml.hotel_ml_reservation_service.repository.ReservationRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
 
     Logger logger = Logger.getLogger(getClass().getName());
@@ -27,11 +29,6 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final KafkaTemplate kafkaTemplate;
 
-    @Autowired
-    public ReservationService(ReservationRepository reservationRepository, KafkaTemplate kafkaTemplate) {
-        this.reservationRepository = reservationRepository;
-        this.kafkaTemplate = kafkaTemplate;
-    }
 
     @KafkaListener(topics = "create_reservation_topic", groupId = "hotel_ml_reservation_service")
     private void createReservation(String message) throws Exception {

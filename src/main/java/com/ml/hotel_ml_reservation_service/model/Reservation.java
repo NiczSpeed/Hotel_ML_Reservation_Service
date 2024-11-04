@@ -33,10 +33,13 @@ public class Reservation {
     @Convert(converter = Encryptor.class)
     private String clientEmail;
     @Column(name = "startDate")
+    @Convert(converter = Encryptor.class)
     private LocalDate startDate;
+    @Convert(converter = Encryptor.class)
     @Column(name = "endDate")
     private LocalDate endDate;
     @Column(name = "amountPayable")
+    @Convert(converter = Encryptor.class)
     private Double amountPayable;
 
 }
