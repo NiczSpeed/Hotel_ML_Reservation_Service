@@ -4,15 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ml.hotel_ml_reservation_service.utils.Encryptor;
 import com.ml.hotel_ml_reservation_service.utils.EncryptorUtil;
 
-public class StringEncryptor extends Encryptor {
+import java.time.LocalDate;
 
+public class LocalDateConverter extends Encryptor<LocalDate> {
 
-    public StringEncryptor(EncryptorUtil encryptorUtil, ObjectMapper objectMapper) {
+    public LocalDateConverter(EncryptorUtil encryptorUtil, ObjectMapper objectMapper) {
         super(encryptorUtil, objectMapper);
     }
 
     @Override
-    protected Class<String> getTargetClass() {
-        return String.class;
+    protected Class<LocalDate> getTargetClass() {
+        return LocalDate.class;
     }
+
 }

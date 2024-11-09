@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ml.hotel_ml_reservation_service.utils.Encryptor;
 import com.ml.hotel_ml_reservation_service.utils.EncryptorUtil;
 
-import java.time.LocalDate;
 
-public class DoubleEncryptor extends Encryptor {
+public class DoubleConverter extends Encryptor<Double> {
 
-    public DoubleEncryptor(EncryptorUtil encryptorUtil, ObjectMapper objectMapper) {
+    public DoubleConverter(EncryptorUtil encryptorUtil, ObjectMapper objectMapper) {
         super(encryptorUtil, objectMapper);
     }
 
