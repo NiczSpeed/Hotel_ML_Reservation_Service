@@ -3,6 +3,7 @@ package com.ml.hotel_ml_reservation_service.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ReservationDto {
 
+    private UUID uuid;
     private String hotelCity;
     private String hotelName;
     private Long roomNumber;
@@ -17,6 +19,5 @@ public class ReservationDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double amountPayable;
-
 
 }
