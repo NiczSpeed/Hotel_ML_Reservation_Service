@@ -48,4 +48,12 @@ public class KafkaTopicsConfiguration {
                 .build();
     }
 
+    @Bean
+    public NewTopic deleteReservationTopic(){
+        return TopicBuilder.name("delete_reservation_topic")
+                .partitions(12)
+                .replicas(3)
+                .build();
+    }
+
 }

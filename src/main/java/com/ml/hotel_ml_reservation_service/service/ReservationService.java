@@ -2,6 +2,7 @@ package com.ml.hotel_ml_reservation_service.service;
 
 import com.ml.hotel_ml_reservation_service.dto.ReservationDto;
 import com.ml.hotel_ml_reservation_service.exceptions.ErrorWhileEncodeException;
+import com.ml.hotel_ml_reservation_service.exceptions.ReservationNotFoundException;
 import com.ml.hotel_ml_reservation_service.mapper.ReservationMapper;
 import com.ml.hotel_ml_reservation_service.model.Reservation;
 import com.ml.hotel_ml_reservation_service.repository.ReservationRepository;
@@ -118,6 +119,26 @@ public class ReservationService {
         }
     }
 
+    @KafkaListener(topics = "delete_reservation_topic", groupId = "hotel_ml_reservation_service")
+    private void deleteReservationByUuid(String message) throws Exception {
+        try {
+            String decodedMessage = encryptorUtil.decrypt(message);
+            JSONObject json = new JSONObject(decodedMessage);
+            JSONObject jsonMessage = json.getJSONObject("message");
+            String messageId = json.optString("messageId");
+            try {
+                Reservation reservation = reservationRepository.findByUuid(UUID.fromString(jsonMessage.optString("uuid"))).orElseThrow(ReservationNotFoundException::new);
+                reservationRepository.delete(reservation);
+                sendRequestMessage("Reservation was successfully deleted! ", messageId, "success_request_topic");
+            } catch (Exception e) {
+                logger.severe("Error while deleting reservation: " + e.getMessage());
+                sendRequestMessage("Error:Reservation with this uuid does not exist!", messageId, "error_request_topic");
+            }
+
+        } catch (Exception e) {
+            logger.severe("Error while creating hotel: " + e.getMessage());
+        }
+    }
 
     private String sendRequestMessage(String message, String messageId, String topic) {
         JSONObject json = new JSONObject();
