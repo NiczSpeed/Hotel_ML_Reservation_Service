@@ -79,12 +79,10 @@ public class ReservationService {
     private void checkFreeRoom(String message) throws Exception {
         try {
             String decodedMessage = encryptorUtil.decrypt(message);
-            JSONObject jsonMessage = new JSONObject(decodedMessage);
-            String messageId = jsonMessage.optString("messageId");
+            JSONObject json = new JSONObject(decodedMessage);
+            JSONObject jsonMessage = json.getJSONObject("message");
+            String messageId = json.optString("messageId");
             jsonMessage.remove("messageId");
-            Map<String, Object> messageMap = jsonMessage.getJSONObject("message").toMap();
-            jsonMessage.clear();
-            jsonMessage = new JSONObject(messageMap);
             LocalDate startDate = LocalDate.parse(jsonMessage.optString("startDate"));
             LocalDate endDate = LocalDate.parse(jsonMessage.optString("endDate"));
             Set<Reservation> checkReservations = reservationRepository.findReservationByHotelNameAndHotelCityAndRoomNumber(jsonMessage.optString("hotel"), jsonMessage.optString("city"), jsonMessage.optLong("room"));
@@ -95,7 +93,7 @@ public class ReservationService {
                 sendRequestMessage("False", messageId, "boolean_reservation_topic");
             }
         } catch (Exception e) {
-            logger.severe("Error while creating hotel: " + e.getMessage());
+            logger.severe("Error while checking reservation!: " + e.getMessage());
         }
     }
 
