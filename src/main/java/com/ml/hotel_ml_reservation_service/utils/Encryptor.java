@@ -5,7 +5,6 @@ import com.ml.hotel_ml_reservation_service.exceptions.ErrorWhileDecodeException;
 import com.ml.hotel_ml_reservation_service.exceptions.ErrorWhileEncodeException;
 import jakarta.persistence.AttributeConverter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
 public class Encryptor<T> implements AttributeConverter<T, String> {
