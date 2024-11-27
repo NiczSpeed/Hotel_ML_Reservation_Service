@@ -19,5 +19,4 @@ public class ReservationDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double amountPayable;
-
 }
