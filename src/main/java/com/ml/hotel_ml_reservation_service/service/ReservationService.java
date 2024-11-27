@@ -113,6 +113,66 @@ public class ReservationService {
                 sendEncodedMessage(jsonArray.toString(), messageId, "all_user_reservation_response_topic");
             }
         } catch (Exception e) {
+            logger.severe("Error while getting reservation list!: " + e.getMessage());
+        }
+    }
+
+    @KafkaListener(topics = "update_reservation_topic", groupId = "hotel_ml_reservation_service")
+    private void updateReservationByUuid(String message) throws Exception {
+        try {
+            String decodedMessage = encryptorUtil.decrypt(message);
+            JSONObject json = new JSONObject(decodedMessage);
+            JSONObject jsonMessage = json.getJSONObject("message");
+            String messageId = json.optString("messageId");
+            LocalDate startDate = LocalDate.parse(jsonMessage.optString("startDate"));
+            LocalDate endDate = LocalDate.parse(jsonMessage.optString("endDate"));
+            try {
+                if (startDate.isBefore(LocalDate.now()) || endDate.isBefore(LocalDate.now())) {
+                    sendRequestMessage("Error:You are trying to select a date from the past!", messageId, "error_request_topic");
+                    logger.severe("Error:You are trying to select a date from the past!");
+                }if (startDate.isAfter(endDate)) {
+                    sendRequestMessage("Error:Starting date can't be after ending date!", messageId, "error_request_topic");
+                    logger.severe("Error:Starting date can't be after ending date!");
+                }
+                Reservation reservation = reservationRepository.findByUuid(UUID.fromString(jsonMessage.optString("uuid"))).orElseThrow(ReservationNotFoundException::new);
+                if(startDate.equals(reservation.getStartDate()) && endDate.equals(reservation.getEndDate())){
+                    sendRequestMessage("Error:Data has not changed!", messageId, "error_request_topic");
+                    logger.severe("Error:Data has not changed!");
+                }
+                Set<Reservation> checkReservations = reservationRepository.findReservationByHotelNameAndHotelCityAndRoomNumber(reservation.getHotelName(), reservation.getHotelCity(), reservation.getRoomNumber());
+
+                if (checkReservations.isEmpty() || isDateRangeAvailable(checkReservations, startDate, endDate) || checkReservations.contains(reservation)) {
+                    CompletableFuture<String> responseFuture = new CompletableFuture<>();
+                    String priceMessageId = UUID.randomUUID().toString();
+                    responseFutures.put(priceMessageId, responseFuture);
+                    JSONObject jsonPrice = new JSONObject().put("hotelName", reservation.getHotelName()).put("hotelCity", reservation.getHotelCity()).put("roomNumber", reservation.getRoomNumber()).put("startDate", startDate).put("endDate", endDate);
+                    sendEncodedMessage(jsonPrice.toString(), priceMessageId, "check_room_reservation_price_topic");
+                    String response = responseFuture.get(5, TimeUnit.SECONDS);
+                    responseFutures.remove(priceMessageId);
+                    if (response.contains("Error")) {
+                        sendRequestMessage(response, messageId, "error_request_topic");
+                    }
+                    else {
+                        jsonPrice.clear();
+                        jsonPrice = new JSONObject(response);
+                        reservation.setStartDate(LocalDate.parse(jsonMessage.optString("startDate")));
+                        reservation.setEndDate(LocalDate.parse(jsonMessage.optString("endDate")));
+                        reservation.setAmountPayable(jsonPrice.optDouble("message"));
+                        reservationRepository.save(reservation);
+                        sendRequestMessage("Reservation was successfully updated! ", messageId, "success_request_topic");
+                        logger.info("Reservation was successfully updated!");
+                    }
+
+                } else {
+                    sendRequestMessage("Error:There is no room on the date given!", messageId, "error_request_topic");
+                    logger.severe("Error:There is no room on the date given!");
+                }
+            } catch (Exception e) {
+                logger.severe("Error:Error while deleting reservation: " + e.getMessage());
+                sendRequestMessage("Error:Reservation with this uuid does not exist!", messageId, "error_request_topic");
+            }
+
+        } catch (Exception e) {
             logger.severe("Error while creating hotel: " + e.getMessage());
         }
     }
@@ -161,7 +221,6 @@ public class ReservationService {
         }
         return true;
     }
-
 
     private String sendEncodedMessage(String message, String messageId, String topic) {
         try {
