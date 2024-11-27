@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
     Optional<Reservation> findByUuid(UUID id);
-    List<Reservation> findByclientEmail(String clientEmail);
+    List<Reservation> findByClientEmail(String clientEmail);
     Set<Reservation> findReservationByHotelNameAndHotelCityAndRoomNumber(String hotelName, String hotelCity, Long roomNumber);
 }
