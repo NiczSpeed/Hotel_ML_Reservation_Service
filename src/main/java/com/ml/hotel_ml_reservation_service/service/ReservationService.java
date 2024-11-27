@@ -211,7 +211,6 @@ public class ReservationService {
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, json.toString());
         future.whenComplete((result, exception) -> {
             if (exception != null) logger.severe(exception.getMessage());
-            else logger.info("Message send successfully!");
         });
         return message;
     }
@@ -243,7 +242,6 @@ public class ReservationService {
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, encodedMessage);
             future.whenComplete((result, exception) -> {
                 if (exception != null) logger.severe(exception.getMessage());
-                else logger.info("Message send successfully!");
             });
             return message;
         } catch (Exception e) {
