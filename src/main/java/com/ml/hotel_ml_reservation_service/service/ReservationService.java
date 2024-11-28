@@ -183,6 +183,28 @@ public class ReservationService {
         }
     }
 
+    @KafkaListener(topics = "update_all_reservation_topic", groupId = "hotel_ml_reservation_service")
+    private void updateAllReservation(String message) throws Exception {
+        String decodedMessage = encryptorUtil.decrypt(message);
+        JSONObject json = new JSONObject(decodedMessage);
+        JSONObject jsonMessage = json.getJSONObject("message");
+        String messageId = json.optString("messageId");
+        try{
+            List<Reservation> userReservations = reservationRepository.findByClientEmail(jsonMessage.optString("oldEmail"));
+            if(userReservations.isEmpty()){
+                sendRequestMessage("Error:There is no reservation!", messageId, "error_request_topic");
+            }
+            else{
+                userReservations.forEach(reservation -> reservation.setClientEmail(jsonMessage.optString("newEmail")));
+                reservationRepository.saveAll(userReservations);
+                sendRequestMessage("Reservation was successfully updated!", messageId, "success_request_topic");
+            }
+
+        }catch (Exception e){
+            logger.severe("Error while updating reservations: " + e.getMessage());
+        }
+    }
+
     @KafkaListener(topics = "delete_reservation_topic", groupId = "hotel_ml_reservation_service")
     private void deleteReservationByUuid(String message) throws Exception {
         try {
