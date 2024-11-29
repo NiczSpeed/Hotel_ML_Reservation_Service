@@ -64,4 +64,11 @@ public class KafkaTopicsConfiguration {
                 .build();
     }
 
+    @Bean
+    public NewTopic updateAllReservationTopic(){
+        return TopicBuilder.name("update_all_reservation_topic")
+                .partitions(12)
+                .replicas(3)
+                .build();
+    }
 }
