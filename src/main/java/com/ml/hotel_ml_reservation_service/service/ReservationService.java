@@ -237,8 +237,8 @@ public class ReservationService {
         return message;
     }
 
-    private static boolean isDateRangeAvailable(Set<Reservation> reservationse, LocalDate newStart, LocalDate newEnd) {
-        for (Reservation reservation : reservationse) {
+    private static boolean isDateRangeAvailable(Set<Reservation> reservations, LocalDate newStart, LocalDate newEnd) {
+        for (Reservation reservation : reservations) {
             LocalDate existingStart = reservation.getStartDate();
             LocalDate existingEnd = reservation.getEndDate();
             if (newEnd.isBefore(existingStart) || newEnd.equals(existingStart) || newStart.isAfter(existingEnd) || newStart.equals(existingEnd)) {
