@@ -288,7 +288,7 @@ public class ReservationService {
         }
     }
 
-    String extractMessageId(String message) {
+    private String extractMessageId(String message) {
         JSONObject json = new JSONObject(message);
         return json.optString("messageId");
     }
