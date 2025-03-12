@@ -1,5 +1,11 @@
 # 📅 Hotel_ML_Reservation_Service - Reservation management
 
+## 📖 Table of Contents
+1. [📌 Overview](#-overview)
+2. [🔧 Technologies](#️-technologies)
+3. [📂 Structure of the Code](#-structure-of-the-code)
+4. [📊 Diagrams](#-diagrams)
+
 ## 📌 Overview
 Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that is responsible for creating and modifying a user's reservations for hotel rooms, communicating with Hotel_ML_Rooms_And_Hotels_Service to obtain room cost information and to generate a list of hotels with available rooms on specific dates. It exchanges data with Hotel_ML_APIGateway_Service by sending messages through Apache Kafka brokers.
 
@@ -7,7 +13,7 @@ Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that i
 > To launch an application using the described service, go to:
 > ➡️ [Main README](https://github.com/NiczSpeed/HotelML?tab=readme-ov-file#%EF%B8%8F-how-to-run-the-entire-system)
 
-📌 **Key features::**
+📌 **Key features:**
 - ✅ Creating and modifying reservations
 - ✅ Exchanging information to update reservation prices
 - ✅ AES Encryption for Stored and Brokered Data
@@ -66,9 +72,4 @@ Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that i
 ### 🗂️ Entity-Relationship Diagram (ERD)
 This diagram represents the relationships between entities in the database.
 
-![ERD Diagram](/docs/ERD/Hotel_ML_Reservation_Service.png)
-
-### 📦 Entity Diagrams
-Detailed entity structures with attributes and relationships.
-
-![Encryption Diagram](/docs/Entity/Hotel_ML_Reservation_Service_Diagram_encryption.png)
+<img src="docs/ERD/Hotel_ML_Reservation_Service.png" width="500">
