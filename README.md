@@ -2,7 +2,7 @@
 
 ## 📖 Table of Contents
 1. [📌 Overview](#-overview)
-2. [ Technologies](#️-technologies)
+2. [🔧 Technologies](#️technologies)
 3. [📂 Structure of the Code](#-structure-of-the-code)
 4. [📊 Diagrams](#-diagrams)
 
@@ -19,7 +19,7 @@ Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that i
 - ✅ AES Encryption for Stored and Brokered Data
 ---
 
-## Technologies
+## 🔧 Technologies
 | Component       | Technology |
 |----------------|------------|
 | **JęzykLanguage**  | Java 21 |
