@@ -2,7 +2,7 @@
 
 ## 📖 Table of Contents
 1. [📌 Overview](#-overview)
-2. [🔧 Technologies](#️-technologies)
+2. [🔧 Technologies](#-technologies)
 3. [📂 Structure of the Code](#-structure-of-the-code)
 4. [📊 Diagrams](#-diagrams)
 
