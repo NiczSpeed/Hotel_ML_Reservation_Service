@@ -2,9 +2,11 @@
 
 ## 📖 Table of Contents
 1. [📌 Overview](#-overview)
-2. [🔧 Technologies](#️technologies)
+2. [🔧 Technologies](#️-technologies)
 3. [📂 Structure of the Code](#-structure-of-the-code)
 4. [📊 Diagrams](#-diagrams)
+
+---
 
 ## 📌 Overview
 Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that is responsible for creating and modifying a user's reservations for hotel rooms, communicating with Hotel_ML_Rooms_And_Hotels_Service to obtain room cost information and to generate a list of hotels with available rooms on specific dates. It exchanges data with Hotel_ML_APIGateway_Service by sending messages through Apache Kafka brokers.
@@ -12,6 +14,8 @@ Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that i
 ## ❗ Important information
 > To launch an application using the described service, go to:
 > ➡️ [Main README](https://github.com/NiczSpeed/HotelML?tab=readme-ov-file#%EF%B8%8F-how-to-run-the-entire-system)
+
+---
 
 📌 **Key features:**
 - ✅ Creating and modifying reservations
@@ -67,9 +71,53 @@ Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that i
 │──.env                                                 # Environment variables for the Docker container
 │── Dockerfile                                          # Docker image definition
 ```
+---
 ## 📊 Diagrams
 
 ### 🗂️ Entity-Relationship Diagram (ERD)
 This diagram represents the relationships between entities in the database.
 
-<img src="docs/ERD/Hotel_ML_Reservation_Service.png" width="500">
+🔗 [View the full ERD](docs/ERD/Hotel_ML_Reservation_Service.svg)
+
+---
+
+### 🏛 Class Diagrams
+These diagrams illustrate the main object-oriented structure of the application, including entities, their attributes, methods, and relationships.
+
+---
+
+#### 🛡️ Encryption classes
+This diagram illustrates encryption classes in service
+
+🔗 [View the encryption classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_encryption.svg)
+
+---
+
+#### 🚨 Exception classes
+This diagram illustrates exception classes in service
+
+🔗 [View the exception classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_Exceptions.svg)
+
+---
+
+#### ⚙️ Configuration classes
+This diagram ilustrates configuration classes in service
+
+🔗 [View the configuration classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_Configuration.svg)
+
+---
+
+#### 💼 Business logic classes
+This diagram ilustrates Business logic classes in service.
+
+The diagram presents the concepts of Coordinator, Producer, Listener, Listener-Coordinator, and Listener-Responder, defining roles in a Kafka-based and multithreaded architecture.
+
+* Coordinator – retrieves data, opens a new thread, invokes the Producer, and waits up to 5 seconds for a Consumer response.
+* Producer – sends data to the appropriate services via Apache Kafka brokers.
+* Listener – listens for messages on a specific topic and forwards them for further processing.
+* Listener-Coordinator – both listens for messages and distributes information to multiple services using multithreading.
+* Listener-Responder – receives a message and directly returns a response to the sender, without additional multithreading layers.
+
+🔗 [View the business logic classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_Business_Logic.svg)
+
+---
