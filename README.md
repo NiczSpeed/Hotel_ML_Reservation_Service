@@ -11,13 +11,13 @@
 ## 📌 Overview
 Hotel_ML_Auth_Service is a backend microservice based on **Spring Boot**, that is responsible for creating and modifying a user's reservations for hotel rooms, communicating with Hotel_ML_Rooms_And_Hotels_Service to obtain room cost information and to generate a list of hotels with available rooms on specific dates. It exchanges data with Hotel_ML_APIGateway_Service by sending messages through Apache Kafka brokers.
 
-## ❗ Important information
+## ❗ Important Information
 > To launch an application using the described service, go to:
 > ➡️ [Main README](https://github.com/NiczSpeed/HotelML?tab=readme-ov-file#%EF%B8%8F-how-to-run-the-entire-system)
 
 ---
 
-📌 **Key features:**
+📌 **Key Features:**
 - ✅ Creating and modifying reservations
 - ✅ Exchanging information to update reservation prices
 - ✅ AES Encryption for Stored and Brokered Data
@@ -86,33 +86,32 @@ These diagrams illustrate the main object-oriented structure of the application,
 
 ---
 
-#### 🛡️ Encryption classes
+#### 🛡️ Encryption Classes
 This diagram illustrates encryption classes in service
 
 🔗 [View the encryption classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_encryption.svg)
 
 ---
 
-#### 🚨 Exception classes
+#### 🚨 Exception Classes
 This diagram illustrates exception classes in service
 
 🔗 [View the exception classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_Exceptions.svg)
 
 ---
 
-#### ⚙️ Configuration classes
+#### ⚙️ Configuration Classes
 This diagram ilustrates configuration classes in service
 
 🔗 [View the configuration classes](docs/Entity/Hotel_ML_Reservation_Service_Diagram_Configuration.svg)
 
 ---
 
-#### 💼 Business logic classes
+#### 💼 Business Logic Classes
 This diagram ilustrates Business logic classes in service.
 
-The diagram presents the concepts of Coordinator, Producer, Listener, Listener-Coordinator, and Listener-Responder, defining roles in a Kafka-based and multithreaded architecture.
+The diagram presents the concepts of Producer, Listener, Listener-Coordinator, and Listener-Responder, defining roles in a Kafka-based and multithreaded architecture.
 
-* Coordinator – retrieves data, opens a new thread, invokes the Producer, and waits up to 5 seconds for a Consumer response.
 * Producer – sends data to the appropriate services via Apache Kafka brokers.
 * Listener – listens for messages on a specific topic and forwards them for further processing.
 * Listener-Coordinator – both listens for messages and distributes information to multiple services using multithreading.
